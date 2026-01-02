@@ -1,0 +1,19 @@
+{
+  "user": "72404eaf4685756b0f160ae0b29fcd736595754d5c8638e4c556bd538872145f",
+  "username": "darkseid",
+  "latest": "backup_1767287493554.enc",
+  "total": 2,
+  "remote_wipe_status": true,
+  "files": [
+    {
+      "name": "backup_1767287492384.enc",
+      "timestamp": "01/01/2026, 10:41:32 PM",
+      "raw_ts": "1767287492384"
+    },
+    {
+      "name": "backup_1767287493554.enc",
+      "timestamp": "01/01/2026, 10:41:33 PM",
+      "raw_ts": "1767287493554"
+    }
+  ]
+}

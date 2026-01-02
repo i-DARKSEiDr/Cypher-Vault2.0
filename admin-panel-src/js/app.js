@@ -1,0 +1,10 @@
+async function sha256Hex(msg){const enc=new TextEncoder();const data=enc.encode(msg);const hash=await crypto.subtle.digest('SHA-256',data);const arr=Array.from(new Uint8Array(hash));return arr.map(b=>('0'+b.toString(16)).slice(-2)).join('')}
+function setText(id,t){document.getElementById(id).textContent=t}
+function setLink(id,href,text){const a=document.getElementById(id);a.href=href;a.textContent=text}
+const rateKey='cv_rate';
+function rateLimited(){const o=localStorage.getItem(rateKey);if(!o)return false;const v=JSON.parse(o);const now=Date.now();if(v.lockUntil && now<v.lockUntil)return true;return false}
+function incrRate(){const o=localStorage.getItem(rateKey);let v=o?JSON.parse(o):{tries:0,lockUntil:0};v.tries++;if(v.tries>=5){v.lockUntil=Date.now()+30000;v.tries=0}localStorage.setItem(rateKey,JSON.stringify(v))}
+function resetRate(){localStorage.removeItem(rateKey)}
+async function verify(){const btn=document.getElementById('verify');const status=document.getElementById('status');if(rateLimited()){status.textContent='Too many attempts. Try later.';status.className='err';return}btn.disabled=true;status.textContent='Verifying...';status.className='';const key=document.getElementById('key').value.trim();if(!key){status.textContent='Enter a key';status.className='err';btn.disabled=false;return}
+try{const h=await sha256Hex(key);const url=`./uploads/${h}/manifest.json`;const res=await fetch(url,{cache:'no-store'});if(!res.ok){incrRate();status.textContent='Invalid key';status.className='err';btn.disabled=false;return}const data=await res.json();resetRate();status.textContent='Verified';status.className='ok';document.getElementById('data').style.display='block';setText('wipe',String(data.remote_wipe_status));setText('total',String(data.total));const latest=`./uploads/${h}/${data.latest}`;setLink('latest',latest,data.latest)}catch(e){incrRate();status.textContent='Error';status.className='err'}btn.disabled=false}
+document.getElementById('verify').addEventListener('click',verify)
