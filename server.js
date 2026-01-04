@@ -14,8 +14,12 @@ app.use(helmet({ contentSecurityPolicy: false }))
 app.use(cors({ origin: true }))
 app.use(express.json()) // For JSON bodies
 
-const DATA_DIR = path.resolve(__dirname, 'data')
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true })
+// Use ephemeral /tmp on Vercel; local dev uses repo /data
+const isVercel = !!process.env.VERCEL
+const DATA_DIR = isVercel ? path.resolve('/tmp/data') : path.resolve(__dirname, 'data')
+if (!fs.existsSync(DATA_DIR)) {
+  try { fs.mkdirSync(DATA_DIR, { recursive: true }) } catch {}
+}
 
 const PANEL_DIR = path.resolve(__dirname, 'admin-panel')
 app.use(express.static(PANEL_DIR))
