@@ -2,18 +2,21 @@
 // Sets API_BASE based on the current domain
 
 const getAPIBase = () => {
-  const protocol = window.location.protocol; // http: or https:
-  const hostname = window.location.hostname; // localhost, domain.com, etc.
-  const port = window.location.port; // port number if present, empty string if not
-  
-  // Construct the base URL
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = window.location.port;
+
+  const PROD_BASE = "https://cypher-vault2-0-dege.vercel.app";
+  const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
+
+  if (!isLocal) {
+    return PROD_BASE;
+  }
+
   let baseURL = `${protocol}//${hostname}`;
-  
-  // Add port if it's not the default port for the protocol
   if (port) {
     baseURL += `:${port}`;
   }
-  
   return baseURL;
 };
 
