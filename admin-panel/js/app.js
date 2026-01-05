@@ -1,4 +1,6 @@
 const API_BASE = (window.API_BASE || '').replace(/\/$/, '')
+const dbg = document.getElementById('debugLog')
+function logLine(t){ if(!dbg) return; const d=document.createElement('div'); d.textContent=String(t); dbg.appendChild(d); dbg.scrollTop = dbg.scrollHeight }
 async function sha256Hex(msg){const enc=new TextEncoder();const data=enc.encode(msg);const hash=await crypto.subtle.digest('SHA-256',data);const arr=Array.from(new Uint8Array(hash));return arr.map(b=>('0'+b.toString(16)).slice(-2)).join('')}
 function setText(id,t){document.getElementById(id).textContent=t}
 function setLink(id,href,text){const a=document.getElementById(id);a.href=href;a.textContent=text}
@@ -15,6 +17,8 @@ async function login(){
     
     const username=document.getElementById('username').value.trim();
     const key=document.getElementById('key').value.trim();
+    logLine('verify_click')
+    logLine('api_base=' + API_BASE)
     
     if(!username || !key){
         status.textContent='Enter username and key';
@@ -29,6 +33,7 @@ async function login(){
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ username, recoveryKey: key })
         });
+        logLine('login_status=' + res.status)
 
         if(!res.ok){
             if (res.status === 404) {
@@ -46,6 +51,8 @@ async function login(){
         const data = await res.json();
         currentUid = data.uid;
         const manifest = data.manifest;
+        logLine('uid=' + currentUid)
+        logLine('files=' + (manifest.files ? manifest.files.length : 0))
 
         status.textContent='Verified';
         status.className='ok';
@@ -54,6 +61,7 @@ async function login(){
         updateUI(manifest);
 
     }catch(e){
+        logLine('error=' + (e && e.message ? e.message : 'unknown'))
         console.error(e);
         status.textContent='Error connecting to server';
         status.className='err';
@@ -70,6 +78,7 @@ function updateUI(manifest){
     if(latestFile){
         const latestUrl = `${API_BASE || ''}/uploads/${currentUid}/${latestFile}`;
         setLink('latest', latestUrl, latestFile);
+        logLine('latest=' + latestFile)
     } else {
         setText('latest', 'None');
     }
