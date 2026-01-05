@@ -8,7 +8,9 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@vercel/blob": "^2.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^4.19.2",
     "helmet": "^7.1.0"
   },

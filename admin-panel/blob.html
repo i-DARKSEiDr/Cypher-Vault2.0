@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload to Vercel Blob - Cypher Vault</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
+        .container { max-width: 600px; margin: 0 auto; }
+        input, button { padding: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; }
+        button { background: #0070f3; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0051a2; }
+        #result { margin-top: 20px; word-break: break-all; }
+        a { color: #0070f3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload to Cypher Blob</h1>
+        <form id="uploadForm">
+            <input type="file" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const fileInput = form.querySelector('input[type="file"]');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('No file selected');
+                return;
+            }
+
+            resultDiv.textContent = 'Uploading...';
+
+            try {
+                // Determine filename (you can modify this to be 'cypher.txt' etc.)
+                const filename = file.name;
+
+                const response = await fetch(`/api/blob/upload?filename=${encodeURIComponent(filename)}`, {
+                    method: 'POST',
+                    body: file, // Send raw file body
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Upload failed: ${response.status} ${errorText}`);
+                }
+
+                const blob = await response.json();
+                resultDiv.innerHTML = `
+                    <p>Upload successful!</p>
+                    <p>Blob URL: <a href="${blob.url}" target="_blank">${blob.url}</a></p>
+                    <pre>${JSON.stringify(blob, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error(error);
+                resultDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

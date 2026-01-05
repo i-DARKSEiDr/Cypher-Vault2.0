@@ -5,6 +5,8 @@ import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
 import { fileURLToPath } from 'url'
+import { put } from '@vercel/blob'
+import 'dotenv/config'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -127,6 +129,28 @@ app.post('/api/wipe', (req, res) => {
     }
 })
 
+// Vercel Blob Upload Handler
+app.post('/api/blob/upload', async (req, res) => {
+    const filename = req.query.filename || 'blob.txt'
+    
+    // Check if token exists
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        console.warn('Missing BLOB_READ_WRITE_TOKEN environment variable')
+        // We continue, as it might fail inside 'put' or user might have it set elsewhere
+    }
+
+    try {
+        // req is a stream in Express
+        const blob = await put(filename, req, {
+            access: 'public',
+        })
+        res.json(blob)
+    } catch (error) {
+        console.error('Blob upload failed:', error)
+        res.status(500).json({ error: error.message })
+    }
+})
+
 function updateManifest(uid, dir, username) {
     try {
         const manifestPath = path.join(dir, 'manifest.json')
@@ -179,7 +203,12 @@ function updateManifest(uid, dir, username) {
     }
 }
 
+// Export for Vercel serverless, run locally with app.listen
 const port = process.env.PORT || 8080
-app.listen(port, '0.0.0.0', () => {
+if (!isVercel) {
+  app.listen(port, '0.0.0.0', () => {
     console.log(`Server listening on port ${port}`)
-})
+  })
+}
+
+export default app

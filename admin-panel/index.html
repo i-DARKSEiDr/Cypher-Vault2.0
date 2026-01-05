@@ -43,6 +43,13 @@
       <div class="field">Latest password file: <a id="latest" class="mono" href="#" download>Download</a></div>
       <div class="field">Total uploaded files: <span id="total" class="mono"></span></div>
       <div class="field">
+        <label>Upload encrypted backup (.enc)</label>
+        <div class="row">
+          <input id="uploadFile" type="file" accept=".enc"/>
+          <button id="uploadBtn" class="btn">Upload to Cloud</button>
+        </div>
+      </div>
+      <div class="field">
         <h3>File History</h3>
         <ul id="fileList" style="list-style:none;padding:0;font-size:14px;"></ul>
       </div>

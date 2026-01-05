@@ -162,3 +162,30 @@ async function toggleWipe(){
 
 document.getElementById('verify').addEventListener('click', login);
 document.getElementById('wipeBtn').addEventListener('click', toggleWipe);
+async function uploadBackup(){
+  const username=document.getElementById('username').value.trim();
+  const key=document.getElementById('key').value.trim();
+  const fileInput=document.getElementById('uploadFile');
+  const f=fileInput && fileInput.files && fileInput.files[0];
+  if(!username||!key||!f){
+    logLine('error=Enter username, key, and pick .enc file')
+    return
+  }
+  const uid=await sha256Hex(key)
+  const ts=Date.now().toString()
+  logLine('upload_start uid='+uid)
+  try{
+    const res=await fetch(`${API_BASE}/upload?uid=${uid}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/octet-stream','X-Username':username,'X-Timestamp':ts},
+      body:f
+    })
+    logLine('upload_status='+res.status)
+    if(res.ok){
+      await login()
+    }
+  }catch(e){
+    logLine('error='+(e&&e.message?e.message:'unknown'))
+  }
+}
+document.getElementById('uploadBtn').addEventListener('click', uploadBackup)
