@@ -76,8 +76,35 @@ function updateUI(manifest){
     
     const latestFile = manifest.latest || (manifest.files.length > 0 ? manifest.files[manifest.files.length-1].name : '');
     if(latestFile){
-        const latestUrl = `${API_BASE || ''}/uploads/${currentUid}/${latestFile}`;
+        // Check if the manifest file object has a direct URL (for Blob), otherwise construct download link
+        const fileObj = manifest.files.find(f => f.name === latestFile);
+        const latestUrl = (fileObj && fileObj.url) 
+             ? fileObj.url 
+             : `${API_BASE}/api/download?uid=${currentUid}&name=${latestFile}`;
+             
         setLink('latest', latestUrl, latestFile);
+        
+        // ADD DEEP LINK BUTTON
+        const deepLink = `ciphervault://import?uid=${currentUid}&url=${encodeURIComponent(latestUrl)}&name=${latestFile}`;
+        const container = document.getElementById('latest').parentNode;
+        
+        // Remove existing deep link button if any to avoid duplicates on re-render
+        const existingBtn = document.getElementById('deepLinkBtn');
+        if(existingBtn) existingBtn.remove();
+        
+        const btn = document.createElement('a');
+        btn.id = 'deepLinkBtn';
+        btn.href = deepLink;
+        btn.textContent = "Direct Import to App";
+        btn.style.marginLeft = "10px";
+        btn.style.padding = "4px 8px";
+        btn.style.background = "#4f46e5";
+        btn.style.color = "white";
+        btn.style.textDecoration = "none";
+        btn.style.borderRadius = "4px";
+        btn.style.fontSize = "0.9em";
+        container.appendChild(btn);
+        
         logLine('latest=' + latestFile)
     } else {
         setText('latest', 'None');
@@ -112,7 +139,8 @@ function updateUI(manifest){
             timeSpan.textContent = f.timestamp || f.name;
 
             const link = document.createElement('a');
-            link.href = `${API_BASE || ''}/uploads/${currentUid}/${f.name}`;
+            // Use f.url if available (Blob), otherwise use download endpoint
+            link.href = f.url ? f.url : `${API_BASE}/api/download?uid=${currentUid}&name=${f.name}`;
             link.textContent = 'Download';
             link.style.float = 'right';
             link.style.color = '#4f46e5';
