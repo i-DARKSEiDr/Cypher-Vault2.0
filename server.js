@@ -27,14 +27,9 @@ app.use(express.static(PANEL_DIR))
 app.use('/uploads', express.static(DATA_DIR))
 
 // Fallback route to serve index.html for client-side routing
-app.get('/', (req, res) => {
-    const indexPath = path.join(PANEL_DIR, 'index.html')
-    if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath)
-    } else {
-        res.status(404).json({ error: 'Admin panel not found' })
-    }
-})
+// Root route removed - static middleware handles admin-panel automatically
+// For non-existent routes, add a 404 handler before the export
+
 
 function ensureUserDir(user) {
     const dir = path.join(DATA_DIR, user)
@@ -275,5 +270,11 @@ if (!isVercel) {
     console.log(`Server listening on port ${port}`)
   })
 }
+
+    // 404 handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'endpoint_not_found' })
+})
+
 
 export default app
