@@ -6,11 +6,12 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+    "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/(?!api)(.*)",
       "destination": "/server.js"
     }
+  ]  }
   ],
   "headers": [
     {
