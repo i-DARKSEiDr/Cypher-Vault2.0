@@ -12,7 +12,7 @@
       "destination": "/server.js"
     }
   ] 
-  ],
+  ,
   "headers": [
     {
       "source": "/(.*)",
