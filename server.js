@@ -26,6 +26,14 @@ const PANEL_DIR = path.resolve(__dirname, 'admin-panel')
 app.use(express.static(PANEL_DIR))
 app.use('/uploads', express.static(DATA_DIR))
 
+// Vercel Web Analytics endpoint handler
+// This endpoint receives analytics data from the client-side script
+app.post('/_vercel/insights/view', (req, res) => {
+  // The analytics data is collected by Vercel's infrastructure
+  // Just respond with success - Vercel handles the data collection
+  res.status(200).send('')
+})
+
 // Fallback route to serve index.html for client-side routing
 // Root route removed - static middleware handles admin-panel automatically
 // For non-existent routes, add a 404 handler before the export
