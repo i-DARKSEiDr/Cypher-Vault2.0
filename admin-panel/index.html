@@ -19,6 +19,7 @@
     .ok{color:#16a34a}
     .err{color:#ef4444}
   </style>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <div class="container">
@@ -42,6 +43,9 @@
       </div>
       <div class="field">Latest password file: <a id="latest" class="mono" href="#" download>Download</a></div>
       <div class="field">Total uploaded files: <span id="total" class="mono"></span></div>
+      <div class="field">
+        <button id="exportCsv" class="btn" style="background:#0ea5e9;">Export CSV</button>
+      </div>
       <div class="field">
         <label>Upload encrypted backup (.enc)</label>
         <div class="row">

@@ -217,3 +217,22 @@ async function uploadBackup(){
   }
 }
 document.getElementById('uploadBtn').addEventListener('click', uploadBackup)
+async function exportCsv(){
+  try{
+    const username=document.getElementById('username').value.trim();
+    const key=document.getElementById('key').value.trim();
+    if(!username||!key){ alert('Enter username and key first'); return }
+    const uid=await sha256Hex(key)
+    const url=`${API_BASE}/api/export?uid=${uid}`
+    const res=await fetch(url)
+    if(!res.ok){ alert('Export failed'); return }
+    const blob=await res.blob()
+    const a=document.createElement('a')
+    a.href=URL.createObjectURL(blob)
+    a.download=`cv_export_${uid.slice(0,8)}.csv`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }catch(e){ alert('Export error') }
+}
+document.getElementById('exportCsv').addEventListener('click', exportCsv)
