@@ -37,6 +37,9 @@ export async function updateProfile(uid, patch) {
 export async function updateAfterUpload(uid, username, fileName, url) {
   const current = await getManifest(uid)
   const files = await listFiles(uid)
+  if (fileName && !files.find(f => f.name === fileName)) {
+    files.push({ name: fileName, url: url })
+  }
   files.sort((a,b)=>a.name.localeCompare(b.name))
   const latest = fileName || (files.length>0 ? files[files.length-1].name : null)
   const total = files.length

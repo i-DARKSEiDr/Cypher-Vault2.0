@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (!uid || uid.length !== 64) return res.status(400).json({ error: 'invalid_uid' })
   const username = String(req.headers['x-username'] || 'Unknown')
   const ts = String(req.headers['x-timestamp'] || Date.now().toString())
-  const requested = String(req.headers['x-filename'] || '').trim()
+  const requested = String(req.headers['x-filename'] || req.query.filename || '').trim()
   const base = requested.length > 0 ? requested : `backup_${ts}.enc`
   const cleaned = base.replace(/[^a-zA-Z0-9._\-() ]/g, '_')
   const safeName = cleaned.toLowerCase().endsWith('.enc') ? cleaned : `${cleaned}.enc`
